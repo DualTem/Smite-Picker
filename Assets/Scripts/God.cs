@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class God : MonoBehaviour {
 	public Text text;
 	public Image winBar;
-	public Image portrait;
+	public SpriteRenderer portrait;
 
 	public string Name;
 	[Range(0.0f,1.0f)]

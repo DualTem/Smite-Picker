@@ -45,6 +45,7 @@ public class MainScript : MonoBehaviour {
 	void Awake(){
 		SetInstance(this);
 		
+
 		// Initialization here
 		
 		LoadGods();
@@ -62,32 +63,35 @@ public class MainScript : MonoBehaviour {
 	private void LoadGods(){
 		TextAsset Tfile = Resources.Load("TeamWinLose") as TextAsset;
 		TextAsset Efile = Resources.Load("EnemyWinLose") as TextAsset;
-		Debug.Log(Tfile.text);
-		Debug.Log(Efile.text);
 		string fileData = Tfile.text;
 		string[] lines = fileData.Split('\n');
-		string[] line1 = lines[0].Split(',');
+		string[] line1 = lines[0].Trim().Split(',');
 
 		// setup the god list
 		for(int i = 1; i < line1.Length; i++){
+			if(line1[i] == "")
+			 continue;
 			GameObject newGodObj = Instantiate(GodPrefab, GodContainer);
 			God newGodComponent = newGodObj.GetComponent<God>();
 			
-			// todo: Get all the portrait sprites and put them in the Resources folder
-			PortraitList.Add(Resources.Load(line1[i]) as Sprite);
-			newGodComponent.portrait.sprite = blankPortrait;
-			if(PortraitList[i-1])
-				newGodComponent.portrait.sprite = PortraitList[i-1];
+			PortraitList.Add(Resources.Load<Sprite>(line1[i]));
+			if(PortraitList[PortraitList.Count-1])
+				newGodComponent.portrait.sprite = PortraitList[PortraitList.Count-1];
+			else
+			{
+				newGodComponent.portrait.sprite = blankPortrait;
+				Debug.LogError("No portrait sprite found for \"" + line1[i] + "\"");
+			}
 
 			newGodComponent.Name = line1[i];
 			newGodComponent.listIndex = i - 1;
-			newGodComponent.winRate = Random.Range(0.3f, 0.7f);
 			GodList.Add(newGodComponent);
 		}
 		
+		// setup the win rate table
 		winrateTable = new float[GodList.Count, GodList.Count];
 		for(int i = 1; i < lines.Length; i++){
-			string[] line = lines[i].Split(',');
+			string[] line = lines[i].Trim().Split(',');
 			for(int j = 1; j < line.Length; j++){
 				winrateTable[j-1, i-1] = float.Parse(line[j]);
 			}
@@ -152,15 +156,16 @@ public class MainScript : MonoBehaviour {
 		}
 	}
 
+
+	// refreshes the calculated winrates for each god based on the team selections
 	public void Refresh(){
-		// todo: double check this code (if it seems that important?)
 		int SelectionCount = 0;
 		for(int i = 0; i < 10; i++){
 			if(SelectedGods[i].Name != ""){
 				SelectionCount++;
 			}
 		}
-		Debug.Log("# of selected Gods: " + SelectionCount);
+		
 		if(SelectionCount == 0){
 			for(int i = 0; i < GodList.Count; i++){
 				GodList[i].winRate = 0.0f;

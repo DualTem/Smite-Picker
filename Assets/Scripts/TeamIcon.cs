@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class TeamIcon : MonoBehaviour {
 
 	public Text text;
-	public Image portrait;
+	public SpriteRenderer portrait;
 	public string Name;
 	public int listIndex;
 	[Range(0.0f,1.0f)]
@@ -14,6 +14,7 @@ public class TeamIcon : MonoBehaviour {
 
 	void Start(){
 		text = GetComponentInChildren<Text>();
+		portrait = GetComponentInChildren<SpriteRenderer>();
 	}
 
 	void Update(){
