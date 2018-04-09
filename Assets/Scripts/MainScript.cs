@@ -62,8 +62,9 @@ public class MainScript : MonoBehaviour {
 
 	private void LoadGods(){
 		TextAsset Tfile = Resources.Load("TeamWinLose") as TextAsset;
-		TextAsset Efile = Resources.Load("EnemyWinLose") as TextAsset;
-		string fileData = Tfile.text;
+        TextAsset Efile = Resources.Load("EnemyWinLose") as TextAsset;
+        TextAsset Gfile = Resources.Load("GodsList") as TextAsset;
+        string fileData = Tfile.text;
 		string[] lines = fileData.Split('\n');
 		string[] line1 = lines[0].Trim().Split(',');
 
@@ -107,6 +108,14 @@ public class MainScript : MonoBehaviour {
 				winrateTableE[j-1, i-1] = float.Parse(line[j]);
 			}
 		}
+
+        fileData = Gfile.text;
+        lines = fileData.Split('\n');
+        for(int i = 0; i < lines.Length && i < GodList.Count; i++)
+        {
+            string[] line = lines[i].Split(',');
+            GodList[i].SetClass(line[1]);
+        }
 	}
 
 	// this function is called when the user clicks on a player's Icon
@@ -156,6 +165,20 @@ public class MainScript : MonoBehaviour {
 		}
 	}
 
+    public void Filter(int classFilter)
+    {
+        foreach(God god in GodList)
+        {
+            if (classFilter > 0 && god.godClass != (GodClass)classFilter)
+            {
+                god.gameObject.SetActive(false);
+            }
+            else
+            {
+                god.gameObject.SetActive(true);
+            }
+        }
+    }
 
 	// refreshes the calculated winrates for each god based on the team selections
 	public void Refresh(){
